@@ -262,6 +262,59 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
             "Expected image in YUV_420_888 format, got format " + image.getFormat());
       }
 
+      ByteBuffer buffer0 = image.getPlanes()[0].getBuffer();
+      byte[] Y1 = new byte[buffer0.remaining()];
+      buffer0.get(Y1);
+      ByteBuffer buffer1 = image.getPlanes()[1].getBuffer();
+      byte[] U1 = new byte[buffer1.remaining()];
+      buffer1.get(U1);
+      ByteBuffer buffer2 = image.getPlanes()[2].getBuffer();
+      byte[] V1 = new byte[buffer2.remaining()];
+      buffer2.get(V1);
+      int Width = image.getWidth();
+      int Height = image.getHeight();
+      //byte[] ImageRGB = new byte[image.getHeight()*image.getWidth()*4];
+      int[] RGB = new int[image.getHeight()*image.getWidth()*3];
+
+      for(int i = 0; i<Height-1; i++){
+        for (int j = 0; j<Width; j++){
+          int Y = Y1[i*Width+j]&0xFF;
+          int U = U1[(i/2)*(Width/2)+j/2]&0xFF;
+          int V = V1[(i/2)*(Width/2)+j/2]&0xFF;
+
+          int R,G,B;
+
+          R = (int)(Y + 1.402 * (V - 128));
+          G = (int)(Y - 0.344 * (U - 128) - 0.714 * (V - 128));
+          B = (int)(Y + 1.772 * (U - 128));
+
+          // Clip rgb values to 0-255
+          R = R < 0 ? 0 : R > 255 ? 255 : R;
+          G = G < 0 ? 0 : G > 255 ? 255 : G;
+          B = B < 0 ? 0 : B > 255 ? 255 : B;
+
+          //ImageRGB[i*4*Width+j*4] = (byte)R;
+          //ImageRGB[i*4*Width+j*4+1] = (byte)G;
+          //ImageRGB[i*4*Width+j*4+2] = (byte)B;
+          //ImageRGB[i*4*Width+j*4+3] = -1;
+
+          RGB[i*3*Width+j*3] = R;
+          RGB[i*3*Width+j*3+1] = G;
+          RGB[i*3*Width+j*3+2] = B;
+          //RGB[i*4*Width+j*4+3] = -1;
+
+          if(i == Width/2 && j == Height/2)
+          {
+            //Log.d("Color ", String.valueOf(R) + " " + String.valueOf(G) + " " + String.valueOf(B));
+            //Log.d("Color2 ", String.valueOf((byte)R) + " " + String.valueOf((byte)G) + " " + String.valueOf((byte)B));
+            Log.d("Color3 ", String.valueOf(RGB[i*3*Width+j*3]) + " " + String.valueOf(RGB[i*3*Width+j*3 + 1]) + " " + String.valueOf(RGB[i*3*Width+j*3 + 2]));
+          }
+
+        }
+      }
+
+      Log.d("size", image.getHeight() + " " + image.getWidth());
+
       ByteBuffer processedImageBytesGrayscale =
           edgeDetector.detect(
               image.getWidth(),
@@ -294,6 +347,8 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
         throw new IllegalArgumentException(
             "Expected image in I8 format, got format " + image.format);
       }
+
+      //Log.d("B", "?");
 
       ByteBuffer processedImageBytesGrayscale =
           edgeDetector.detect(image.width, image.height, /* stride= */ image.width, image.buffer);

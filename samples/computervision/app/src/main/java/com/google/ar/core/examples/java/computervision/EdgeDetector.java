@@ -47,41 +47,51 @@ public class EdgeDetector {
     input.get(inputPixels);
 
     // Detect edges.
+
     for (int j = 1; j < height - 1; j++) {
       for (int i = 1; i < width - 1; i++) {
         // Offset of the pixel at [i, j] of the input image.
         int offset = (j * stride) + i;
 
-        // Neighbour pixels around the pixel at [i, j].
-        int a00 = inputPixels[offset - width - 1];
-        int a01 = inputPixels[offset - width];
-        int a02 = inputPixels[offset - width + 1];
-        int a10 = inputPixels[offset - 1];
-        int a12 = inputPixels[offset + 1];
-        int a20 = inputPixels[offset + width - 1];
-        int a21 = inputPixels[offset + width];
-        int a22 = inputPixels[offset + width + 1];
+//        if(j < height/2 + 20 && j > height/2 - 20 && i < width/2 + 20 && i > width/2 - 20)
+//        {
+//          outputPixels[(j * width) + i] = (byte) 0xd2;
+//          outputPixels[(j * width) + i] = (byte) 0xd2;
+//          outputPixels[(j * width) + i] = (byte) 0xd2;
+//        }
+//        else
+//        {
+          // Neighbour pixels around the pixel at [i, j].
+          int a00 = inputPixels[offset - width - 1];
+          int a01 = inputPixels[offset - width];
+          int a02 = inputPixels[offset - width + 1];
+          int a10 = inputPixels[offset - 1];
+          int a12 = inputPixels[offset + 1];
+          int a20 = inputPixels[offset + width - 1];
+          int a21 = inputPixels[offset + width];
+          int a22 = inputPixels[offset + width + 1];
 
-        // Sobel X filter:
-        //   -1, 0, 1,
-        //   -2, 0, 2,
-        //   -1, 0, 1
-        int xSum = -a00 - (2 * a10) - a20 + a02 + (2 * a12) + a22;
+          // Sobel X filter:
+          //   -1, 0, 1,
+          //   -2, 0, 2,
+          //   -1, 0, 1
+          int xSum = -a00 - (2 * a10) - a20 + a02 + (2 * a12) + a22;
 
-        // Sobel Y filter:
-        //    1, 2, 1,
-        //    0, 0, 0,
-        //   -1, -2, -1
-        int ySum = a00 + (2 * a01) + a02 - a20 - (2 * a21) - a22;
+          // Sobel Y filter:
+          //    1, 2, 1,
+          //    0, 0, 0,
+          //   -1, -2, -1
+          int ySum = a00 + (2 * a01) + a02 - a20 - (2 * a21) - a22;
 
-        if ((xSum * xSum) + (ySum * ySum) > SOBEL_EDGE_THRESHOLD) {
-          outputPixels[(j * width) + i] = (byte) 0xFF;
-        } else {
-          outputPixels[(j * width) + i] = (byte) 0x1F;
-        }
+          if ((xSum * xSum) + (ySum * ySum) > SOBEL_EDGE_THRESHOLD) {
+            outputPixels[(j * width) + i] = (byte) 0xFF;
+          } else {
+            outputPixels[(j * width) + i] = (byte) 0x1F;
+          }
+
+        //}
       }
     }
-
     return ByteBuffer.wrap(outputPixels);
   }
 }

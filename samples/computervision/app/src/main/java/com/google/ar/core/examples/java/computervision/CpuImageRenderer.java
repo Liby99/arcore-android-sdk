@@ -18,6 +18,7 @@ import android.content.Context;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 import android.view.Surface;
 import com.google.ar.core.Frame;
 import com.google.ar.core.Session;

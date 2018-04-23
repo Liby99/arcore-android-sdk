@@ -20,6 +20,8 @@ import android.content.Context;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLES30;
+import android.util.Log;
+
 import com.google.ar.core.examples.java.common.rendering.ShaderUtil;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -383,7 +385,7 @@ public class TextureReader {
     if (frontIndex != -1) {
       return acquireFrame(frontIndex);
     }
-
+    //Log.d("No", "sth");
     return null;
   }
 

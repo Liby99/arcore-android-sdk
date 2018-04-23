@@ -14,6 +14,8 @@
  */
 package com.google.ar.core.examples.java.computervision;
 
+import android.util.Log;
+
 import java.nio.ByteBuffer;
 
 /** Image Buffer Class. */
