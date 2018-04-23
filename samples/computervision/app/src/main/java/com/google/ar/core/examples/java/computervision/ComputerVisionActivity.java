@@ -17,6 +17,10 @@
 package com.google.ar.core.examples.java.computervision;
 
 import android.graphics.ImageFormat;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.Image;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -40,6 +44,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
 
 /** This is a simple example that demonstrates cpu image access with ARCore. */
 public class ComputerVisionActivity extends AppCompatActivity implements GLSurfaceView.Renderer {
@@ -80,6 +85,27 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
   private static final int IMAGE_WIDTH = 1280;
   private static final int IMAGE_HEIGHT = 720;
 
+  // My implementation
+//  private SensorManager mSensorManager;
+//  private final float[] mAccelerometerReading = new float[3];
+//  private final float[] mMagnetometerReading = new float[3];
+//
+//  private final float[] mRotationMatrix = new float[9];
+//  private final float[] mOrientationAngles = new float[3];
+//
+//  SensorEventListener _SensorEventListener =   new SensorEventListener() {
+//    @Override
+//    public void onSensorChanged(SensorEvent event) {
+//
+//    }
+//
+//    @Override
+//    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+//
+//    }
+//  };
+
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -100,6 +126,9 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
     surfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
     installRequested = false;
+
+    // My implementation
+//    mSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
   }
 
   @Override
@@ -146,6 +175,12 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
         Log.e(TAG, "Exception creating session", exception);
         return;
       }
+
+      // My implementation
+//      mSensorManager.registerListener(this, Sensor.TYPE_ACCELEROMETER,
+//              SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
+//      mSensorManager.registerListener(this, Sensor.TYPE_MAGNETIC_FIELD,
+//              SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
     }
 
     // Note that order matters - see the note in onPause(), the reverse applies here.
@@ -173,6 +208,9 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
       cpuImageDisplayRotationHelper.onPause();
       surfaceView.onPause();
       session.pause();
+
+      // My implementation
+//      mSensorManager.unregisterListener(this);
     }
   }
 
@@ -262,58 +300,8 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
             "Expected image in YUV_420_888 format, got format " + image.getFormat());
       }
 
-      ByteBuffer buffer0 = image.getPlanes()[0].getBuffer();
-      byte[] Y1 = new byte[buffer0.remaining()];
-      buffer0.get(Y1);
-      ByteBuffer buffer1 = image.getPlanes()[1].getBuffer();
-      byte[] U1 = new byte[buffer1.remaining()];
-      buffer1.get(U1);
-      ByteBuffer buffer2 = image.getPlanes()[2].getBuffer();
-      byte[] V1 = new byte[buffer2.remaining()];
-      buffer2.get(V1);
-      int Width = image.getWidth();
-      int Height = image.getHeight();
-      //byte[] ImageRGB = new byte[image.getHeight()*image.getWidth()*4];
-      int[] RGB = new int[image.getHeight()*image.getWidth()*3];
-
-      for(int i = 0; i<Height-1; i++){
-        for (int j = 0; j<Width; j++){
-          int Y = Y1[i*Width+j]&0xFF;
-          int U = U1[(i/2)*(Width/2)+j/2]&0xFF;
-          int V = V1[(i/2)*(Width/2)+j/2]&0xFF;
-
-          int R,G,B;
-
-          R = (int)(Y + 1.402 * (V - 128));
-          G = (int)(Y - 0.344 * (U - 128) - 0.714 * (V - 128));
-          B = (int)(Y + 1.772 * (U - 128));
-
-          // Clip rgb values to 0-255
-          R = R < 0 ? 0 : R > 255 ? 255 : R;
-          G = G < 0 ? 0 : G > 255 ? 255 : G;
-          B = B < 0 ? 0 : B > 255 ? 255 : B;
-
-          //ImageRGB[i*4*Width+j*4] = (byte)R;
-          //ImageRGB[i*4*Width+j*4+1] = (byte)G;
-          //ImageRGB[i*4*Width+j*4+2] = (byte)B;
-          //ImageRGB[i*4*Width+j*4+3] = -1;
-
-          RGB[i*3*Width+j*3] = R;
-          RGB[i*3*Width+j*3+1] = G;
-          RGB[i*3*Width+j*3+2] = B;
-          //RGB[i*4*Width+j*4+3] = -1;
-
-          if(i == Width/2 && j == Height/2)
-          {
-            //Log.d("Color ", String.valueOf(R) + " " + String.valueOf(G) + " " + String.valueOf(B));
-            //Log.d("Color2 ", String.valueOf((byte)R) + " " + String.valueOf((byte)G) + " " + String.valueOf((byte)B));
-            Log.d("Color3 ", String.valueOf(RGB[i*3*Width+j*3]) + " " + String.valueOf(RGB[i*3*Width+j*3 + 1]) + " " + String.valueOf(RGB[i*3*Width+j*3 + 2]));
-          }
-
-        }
-      }
-
-      Log.d("size", image.getHeight() + " " + image.getWidth());
+      // My implementation
+      getRGBSamples(image);
 
       ByteBuffer processedImageBytesGrayscale =
           edgeDetector.detect(
@@ -372,5 +360,65 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
     // Submit request for the texture from the current frame.
     gpuDownloadFrameBufferIndex =
         textureReader.submitFrame(cpuImageRenderer.getTextureId(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
+  }
+
+  private void getRGBSamples(Image image)
+  {
+    // YUV to RGB conversion
+    ByteBuffer buffer0 = image.getPlanes()[0].getBuffer();
+    byte[] Y1 = new byte[buffer0.remaining()];
+    buffer0.get(Y1);
+    ByteBuffer buffer1 = image.getPlanes()[1].getBuffer();
+    byte[] U1 = new byte[buffer1.remaining()];
+    buffer1.get(U1);
+    ByteBuffer buffer2 = image.getPlanes()[2].getBuffer();
+    byte[] V1 = new byte[buffer2.remaining()];
+    buffer2.get(V1);
+    int Width = image.getWidth();
+    int Height = image.getHeight();
+    //byte[] ImageRGB = new byte[image.getHeight()*image.getWidth()*4];
+    int[] RGB = new int[image.getHeight()*image.getWidth()*3];
+
+    for(int i = 0; i<Height-1; i++){
+      for (int j = 0; j<Width; j++){
+        int Y = Y1[i*Width+j]&0xFF;
+        int U = U1[(i/2)*(Width/2)+j/2]&0xFF;
+        int V = V1[(i/2)*(Width/2)+j/2]&0xFF;
+
+        int R,G,B;
+
+        R = (int)(Y + 1.402 * (V - 128));
+        G = (int)(Y - 0.344 * (U - 128) - 0.714 * (V - 128));
+        B = (int)(Y + 1.772 * (U - 128));
+
+        // Clip rgb values to 0-255
+        R = R < 0 ? 0 : R > 255 ? 255 : R;
+        G = G < 0 ? 0 : G > 255 ? 255 : G;
+        B = B < 0 ? 0 : B > 255 ? 255 : B;
+
+        //ImageRGB[i*4*Width+j*4] = (byte)R;
+        //ImageRGB[i*4*Width+j*4+1] = (byte)G;
+        //ImageRGB[i*4*Width+j*4+2] = (byte)B;
+        //ImageRGB[i*4*Width+j*4+3] = -1;
+
+        RGB[i*3*Width+j*3] = R;
+        RGB[i*3*Width+j*3+1] = G;
+        RGB[i*3*Width+j*3+2] = B;
+        //RGB[i*4*Width+j*4+3] = -1;
+
+        if(i == Width/2 && j == Height/2)
+        {
+          //Log.d("Color ", String.valueOf(R) + " " + String.valueOf(G) + " " + String.valueOf(B));
+          //Log.d("Color2 ", String.valueOf((byte)R) + " " + String.valueOf((byte)G) + " " + String.valueOf((byte)B));
+          Log.d("Color3 ", String.valueOf(RGB[i*3*Width+j*3]) + " " + String.valueOf(RGB[i*3*Width+j*3 + 1]) + " " + String.valueOf(RGB[i*3*Width+j*3 + 2]));
+        }
+
+      }
+    }
+
+    //Log.d("size", image.getHeight() + " " + image.getWidth());
+
+    mSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
+    mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
   }
 }
