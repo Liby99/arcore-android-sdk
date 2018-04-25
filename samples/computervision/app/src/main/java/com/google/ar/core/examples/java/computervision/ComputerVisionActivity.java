@@ -368,15 +368,21 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
     ByteBuffer buffer0 = image.getPlanes()[0].getBuffer();
     byte[] Y1 = new byte[buffer0.remaining()];
     buffer0.get(Y1);
+
     ByteBuffer buffer1 = image.getPlanes()[1].getBuffer();
     byte[] U1 = new byte[buffer1.remaining()];
     buffer1.get(U1);
+
     ByteBuffer buffer2 = image.getPlanes()[2].getBuffer();
     byte[] V1 = new byte[buffer2.remaining()];
     buffer2.get(V1);
+
     int Width = image.getWidth();
     int Height = image.getHeight();
-    //byte[] ImageRGB = new byte[image.getHeight()*image.getWidth()*4];
+
+    //ByteBuffer output = image.getPlanes()[1].getBuffer();
+
+    //byte[] ImageRGB = new byte[image.getHeight()*image.getWidth()*3];
     int[] RGB = new int[image.getHeight()*image.getWidth()*3];
 
     for(int i = 0; i<Height-1; i++){
@@ -396,10 +402,10 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
         G = G < 0 ? 0 : G > 255 ? 255 : G;
         B = B < 0 ? 0 : B > 255 ? 255 : B;
 
-        //ImageRGB[i*4*Width+j*4] = (byte)R;
-        //ImageRGB[i*4*Width+j*4+1] = (byte)G;
-        //ImageRGB[i*4*Width+j*4+2] = (byte)B;
-        //ImageRGB[i*4*Width+j*4+3] = -1;
+//        ImageRGB[i*3*Width+j*3] = (byte)(R - 128);
+//        ImageRGB[i*3*Width+j*3+1] = (byte)(G - 128);
+//        ImageRGB[i*3*Width+j*3+2] = (byte)(B - 128);
+        //ImageRGB[i*4*Width+j*4+3] = (byte) 127;//-1;
 
         RGB[i*3*Width+j*3] = R;
         RGB[i*3*Width+j*3+1] = G;
@@ -416,9 +422,9 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
       }
     }
 
-    //Log.d("size", image.getHeight() + " " + image.getWidth());
 
-    mSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
-    mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
+
+//    mSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
+//    mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
   }
 }

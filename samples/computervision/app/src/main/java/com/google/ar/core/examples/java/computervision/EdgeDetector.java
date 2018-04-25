@@ -83,12 +83,22 @@ public class EdgeDetector {
           //   -1, -2, -1
           int ySum = a00 + (2 * a01) + a02 - a20 - (2 * a21) - a22;
 
+          if(i < width/2 + 20 && i > width/2 - 20 && j < height/2 + 20 && j > height/2 - 20)
+          {
+            if((i > width/2 + 18 || i < width/2 - 18) || (j > height/2 + 18 || j < height/2 - 18))
+              outputPixels[(j * width) + i] = (byte) 0xFF;
+            else
+              outputPixels[(j * width) + i] = inputPixels[offset];
+          }
+          else
+            outputPixels[(j * width) + i] = inputPixels[offset];
+          /*
           if ((xSum * xSum) + (ySum * ySum) > SOBEL_EDGE_THRESHOLD) {
             outputPixels[(j * width) + i] = (byte) 0xFF;
           } else {
             outputPixels[(j * width) + i] = (byte) 0x1F;
           }
-
+          */
         //}
       }
     }

@@ -201,6 +201,20 @@ public class CpuImageRenderer {
       int cameraToDisplayRotation) {
 
     // Apply overlay image buffer
+//    if (processedImageBytesGrayscale != null) {
+//      GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+//      GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, overlayTextureId);
+//      GLES20.glTexImage2D(
+//              GLES20.GL_TEXTURE_2D,
+//              0,
+//              GLES20.GL_RGB,
+//              imageWidth,
+//              imageHeight,
+//              0,
+//              GLES20.GL_RGB,
+//              GLES20.GL_UNSIGNED_BYTE,
+//              processedImageBytesGrayscale);
+//    }
     if (processedImageBytesGrayscale != null) {
       GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
       GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, overlayTextureId);
