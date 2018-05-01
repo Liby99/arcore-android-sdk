@@ -86,6 +86,9 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
   private static final int IMAGE_HEIGHT = 720;
 
   // My implementation
+  private SensorManager mSensorManager;
+  private GyroListener mGyroListener;
+
 //  private SensorManager mSensorManager;
 //  private final float[] mAccelerometerReading = new float[3];
 //  private final float[] mMagnetometerReading = new float[3];
@@ -129,6 +132,12 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
 
     // My implementation
 //    mSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
+      mGyroListener = new GyroListener();
+      mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+      mGyroListener.mSensorManager = mSensorManager;
+      mGyroListener.mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+      mGyroListener.mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+      mGyroListener.mRotationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
   }
 
   @Override
@@ -175,12 +184,6 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
         Log.e(TAG, "Exception creating session", exception);
         return;
       }
-
-      // My implementation
-//      mSensorManager.registerListener(this, Sensor.TYPE_ACCELEROMETER,
-//              SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
-//      mSensorManager.registerListener(this, Sensor.TYPE_MAGNETIC_FIELD,
-//              SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
     }
 
     // Note that order matters - see the note in onPause(), the reverse applies here.
@@ -196,6 +199,13 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
     }
     surfaceView.onResume();
     cpuImageDisplayRotationHelper.onResume();
+
+    // My implementation
+    mGyroListener.startGyro();
+//      mSensorManager.registerListener(this, Sensor.TYPE_ACCELEROMETER,
+//              SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
+//      mSensorManager.registerListener(this, Sensor.TYPE_MAGNETIC_FIELD,
+//              SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
   }
 
   @Override
@@ -210,6 +220,7 @@ public class ComputerVisionActivity extends AppCompatActivity implements GLSurfa
       session.pause();
 
       // My implementation
+      mGyroListener.stopGyro();
 //      mSensorManager.unregisterListener(this);
     }
   }
